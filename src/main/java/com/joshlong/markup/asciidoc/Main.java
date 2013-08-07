@@ -15,7 +15,7 @@
  */
 package com.joshlong.markup.asciidoc;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 import static com.joshlong.markup.asciidoc.StringUtils.*;
@@ -33,24 +33,51 @@ public class Main {
 	public final static String OUT = "out";
 
 	public static void main(String[] args) throws Throwable {
-
-
 		AsciidocPegDownProcessor pegDownProcessor = new AsciidocPegDownProcessor();
 		Map<String, String> argsMap = options(args);
-		String markdown = read(in(argsMap));
+		String markdown = read(inReader(argsMap));
 		String asciidoc = pegDownProcessor.markdownToAsciidoc(markdown);
-		write(out(argsMap), asciidoc);
-
+		write(outWriter(argsMap), asciidoc);
 	}
 
-	private static File in(Map<String, String> options) {
-		String inPath = defaultString(options.get(IN), new File(USER_HOME, IN + ".md").getAbsolutePath());
-		return new File(inPath);
+	private static Reader inReader(Map<String, String> options) {
+		return new InputStreamReader(in(options));
 	}
 
-	private static File out(Map<String, String> args) {
-		String outPath = defaultString(args.get(OUT), new File(USER_HOME, OUT + ".asc").getAbsolutePath());
-		return new File(outPath);
+	/** Returns an {@link InputStream} representing the file given as the {@code -in} argument, or standard input. */
+	private static InputStream in(Map<String, String> options) {
+		if (options.size() > 0){
+			String inPath = defaultString(options.get(IN), new File(USER_HOME, IN + ".md").getAbsolutePath());
+			try {
+				return new FileInputStream(new File(inPath));
+			}
+			catch (FileNotFoundException e) {
+				throw new RuntimeException("couldn't find the input stream file, " + inPath + ".", e);
+			}
+		}
+		else {
+			return System.in;
+		}
+	}
+
+	private static Writer outWriter(Map<String, String> args) {
+		return new OutputStreamWriter(out(args));
+	}
+
+	/** Returns an {@link OutputStream} representing the file given as the {@code -out} argument, or standard output. */
+	private static OutputStream out(Map<String, String> args) {
+		if (args.size() > 0){
+			String outPath = defaultString(args.get(OUT), new File(USER_HOME, OUT + ".asc").getAbsolutePath());
+			try {
+				return new FileOutputStream(new File(outPath));
+			}
+			catch (FileNotFoundException e) {
+				throw new RuntimeException("couldn't find the output stream file, " + outPath + ".", e);
+			}
+		}
+		else {
+			return System.out;
+		}
 	}
 
 	private static Map<String, String> options(String[] args) {
