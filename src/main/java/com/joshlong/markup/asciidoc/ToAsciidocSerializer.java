@@ -8,7 +8,7 @@ import static org.parboiled.common.Preconditions.checkArgNotNull;
 
 /**
  * {@link Visitor visitor} implementation that emits Asciidoc compliant markup as it <EM>visits</EM> the Markdown
- * document. At least, in theory.
+ * document. At least, IN theory.
  *
  * @author Josh Long
  */

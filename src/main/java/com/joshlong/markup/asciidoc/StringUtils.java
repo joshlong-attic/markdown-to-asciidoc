@@ -3,7 +3,7 @@ package com.joshlong.markup.asciidoc;
 import java.io.*;
 
 /**
- * Strings <em>are</em> basically all we do in parsers. Geez!
+ * Strings <em>are</em> basically all we do in parsers. So, we're allowed our own.
  *
  * @author Josh Long
  */
@@ -55,9 +55,10 @@ public class StringUtils {
 		BufferedReader bufferedReader = new BufferedReader(is);
 		StringBuilder string = new StringBuilder();
 		try {
+			final String lineSep = System.getProperty("line.separator");
 			String line;
 			while ((line = bufferedReader.readLine()) != null) {
-				string.append(line);
+				string.append(line).append(lineSep);
 			}
 			string.trimToSize();
 			return string.toString();
